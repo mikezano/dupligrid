@@ -3,5 +3,5 @@ module.exports = {
   configureWebpack: {
     plugins: [],
   },
-  publicPath: '',
+  publicPath: './',
 };
