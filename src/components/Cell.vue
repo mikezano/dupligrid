@@ -5,23 +5,24 @@
 <script>
 export default {
 	name: 'cell',
-	props: ['color'],
+	props: ['color', 'index'],
 	methods: {
 		applyColor() {
 			this.$refs['cell'].style.backgroundColor = this.color;
+			this.$emit('cellClicked', this.index);
 		},
 	},
 	mounted() {
-		console.log(this.$refs['cell'].style);
-		console.log(this.color);
+		//console.log(this.$refs['cell'].style);
+		//console.log(this.color);
 	},
 };
 </script>
 
 <style>
 .cell {
-	width: 200px;
-	height: 200px;
-	border: 1px solid black;
+	width: 20px;
+	height: 20px;
+	border: 1px dotted gray;
 }
 </style>
