@@ -4,6 +4,7 @@
 			<Cell
 				:color="color"
 				:index="i"
+				:isEditable="isEditable"
 				v-on:cellClicked="cellClicked"
 				ref="i"
 				v-for="i in gridCellCount"
@@ -17,7 +18,12 @@
 import Cell from '@/components/Cell.vue';
 
 export default {
-	props: ['color', 'colorIndex', 'gridSize', 'orientation'],
+	props: [
+		'color',
+		'gridSize',
+		'orientation',
+		'isEditable'
+	],
 	components: {
 		Cell,
 	},
@@ -30,11 +36,9 @@ export default {
 		cellClicked(index) {
 			this.$emit('cellClicked', index);
 		},
-	},
-	watch: {
-		colorIndex(val) {
-			this.$refs['i'][val - 1].applyColor();
-		},
+		applyColor(index, color){
+			this.$refs["i"][index - 1].applyColor(color);
+		}
 	},
 	mounted() {
 		console.log(this.gridCellCount);

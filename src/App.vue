@@ -7,25 +7,29 @@
 					orientation="normal"
 					:gridSize="gridSize"
 					:color="color"
+					:isEditable="true"
 					v-on:cellClicked="cellClicked"
 				/>
 				<MainGrid
 					orientation="flipped-horizontal"
 					:gridSize="gridSize"
-					:color="color"
+					:isEditable="false"
 					:colorIndex="colorIndex"
+					ref="1"
 				/>
 				<MainGrid
 					orientation="flipped-vertical"
 					:gridSize="gridSize"
-					:color="color"
+					:isEditable="false"
 					:colorIndex="colorIndex"
+					ref="2"
 				/>
 				<MainGrid
 					orientation="flipped-horizontal-vertical"
 					:gridSize="gridSize"
-					:color="color"
+					:isEditable="false"
 					:colorIndex="colorIndex"
+					ref="3"
 				/>
 			</div>
 		</div>
@@ -34,7 +38,6 @@
 
 <script>
 import PenColor from '@/components/PenColor.vue';
-import Cell from '@/components/Cell.vue';
 import MainGrid from '@/components/MainGrid.vue';
 
 export default {
@@ -48,7 +51,6 @@ export default {
 	},
 	components: {
 		PenColor,
-		Cell,
 		MainGrid,
 	},
 	methods: {
@@ -58,6 +60,9 @@ export default {
 		cellClicked(index) {
 			console.log('next index to color:', index);
 			this.colorIndex = index;
+			this.$refs['1'].applyColor(index, this.color);
+			this.$refs['2'].applyColor(index, this.color);
+			this.$refs['3'].applyColor(index, this.color);
 		},
 	},
 };

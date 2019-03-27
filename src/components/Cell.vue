@@ -1,16 +1,29 @@
 <template>
-	<div ref="cell" class="cell" @click="applyColor()"></div>
+	<div 
+	ref="cell"
+	class="cell"
+	@mousedown="applyPenColor($event)"
+	@mouseenter="applyPenColor($event)"></div>
 </template>
 
 <script>
 export default {
 	name: 'cell',
-	props: ['color', 'index'],
+	props: ['color', 'index', 'isEditable'],
 	methods: {
-		applyColor() {
-			this.$refs['cell'].style.backgroundColor = this.color;
-			this.$emit('cellClicked', this.index);
+		applyColor(color) {
+
+			this.$refs['cell'].style.backgroundColor = color;
 		},
+		applyPenColor(event){
+
+			debugger;
+			if(!(event.buttons == 1 || event.buttons ==2)) return;
+			if(!this.isEditable ) return;
+
+			this.applyColor(this.color);
+			this.$emit('cellClicked', this.index);
+		}
 	},
 	mounted() {
 		//console.log(this.$refs['cell'].style);
