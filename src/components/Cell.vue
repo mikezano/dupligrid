@@ -17,7 +17,6 @@ export default {
 		},
 		applyPenColor(event){
 
-			debugger;
 			if(!(event.buttons == 1 || event.buttons ==2)) return;
 			if(!this.isEditable ) return;
 
