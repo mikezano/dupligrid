@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
 		<PenColor :penColor="color" v-on:colorChanged="colorChanged"/>
-		<ContainerGrid :gridSize="gridSize"/>
+		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex"/>
 	</div>
 </template>
 
@@ -15,7 +15,7 @@ export default {
 		return {
 			color: '#000000',
 			colorIndex: 0,
-			gridSize: 10,
+			gridSize: 20,
 		};
 	},
 	components: {
@@ -25,7 +25,7 @@ export default {
 	methods: {
 		colorChanged(val) {
 			this.color = val;
-		}
+		},
 	},
 };
 </script>
