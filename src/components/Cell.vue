@@ -14,6 +14,7 @@ export default {
 	methods: {
 		applyColor(color) {
 			this.$refs['cell'].style.backgroundColor = color;
+			//var before = window.getComputedStyle(this.$refs.cell, ':before');
 		},
 		applyPenColor(event) {
 			if (!(event.buttons == 1 || event.buttons == 2)) return;
@@ -34,7 +35,10 @@ export default {
 .cell {
 	width: 10px;
 	height: 10px;
-	border: 1px dotted gray;
-	border-radius: 50%;
+	overflow:hidden;
+	border-radius:50%;
+	border:1px solid gray;
+	position:relative;
 }
+
 </style>
