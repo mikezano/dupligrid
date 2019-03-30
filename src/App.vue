@@ -1,12 +1,14 @@
 <template>
 	<div id="app">
 		<PenColor :penColor="color" v-on:colorChanged="colorChanged"/>
-		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex"/>
+		<Tools v-on:toggleGridLines="toggleGridLines"/>
+		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex" ref="containerGrid"/>
 	</div>
 </template>
 
 <script>
 import PenColor from '@/components/PenColor.vue';
+import Tools from '@/components/Tools.vue';
 import ContainerGrid from '@/components/ContainerGrid.vue';
 
 export default {
@@ -21,10 +23,14 @@ export default {
 	components: {
 		PenColor,
 		ContainerGrid,
+		Tools,
 	},
 	methods: {
 		colorChanged(val) {
 			this.color = val;
+		},
+		toggleGridLines(val) {
+			this.$refs.containerGrid.toggleGridLines(val);
 		},
 	},
 };

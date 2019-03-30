@@ -28,6 +28,11 @@ export default {
 		cellClicked(index) {
 			this.$emit('cellClicked', index);
 		},
+		toggleGridLines(val) {
+			this.$refs.i.forEach(element => {
+				element.toggleGridLines(val);
+			});
+		},
 	},
 };
 </script>

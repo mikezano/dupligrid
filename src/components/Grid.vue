@@ -18,12 +18,7 @@
 import Cell from '@/components/Cell.vue';
 
 export default {
-	props: [
-		'color',
-		'gridSize',
-		'orientation',
-		'isEditable'
-	],
+	props: ['color', 'gridSize', 'orientation', 'isEditable'],
 	components: {
 		Cell,
 	},
@@ -36,9 +31,14 @@ export default {
 		cellClicked(index) {
 			this.$emit('cellClicked', index);
 		},
-		applyColor(index, color){
-			this.$refs["i"][index - 1].applyColor(color);
-		}
+		applyColor(index, color) {
+			this.$refs['i'][index - 1].applyColor(color);
+		},
+		toggleGridLines(val) {
+			this.$refs.i.forEach(element => {
+				element.toggleGridLines(val);
+			});
+		},
 	},
 	mounted() {
 		console.log(this.gridCellCount);

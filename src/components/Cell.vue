@@ -23,6 +23,9 @@ export default {
 			this.applyColor(this.color);
 			this.$emit('cellClicked', this.index);
 		},
+		toggleGridLines(val) {
+			this.$refs.cell.style.borderColor = val ? 'gray' : 'transparent';
+		},
 	},
 	mounted() {
 		//console.log(this.$refs['cell'].style);
@@ -35,10 +38,14 @@ export default {
 .cell {
 	width: 10px;
 	height: 10px;
-	overflow:hidden;
-	border-radius:50%;
-	border:1px solid gray;
-	position:relative;
+	border: 1px solid gray;
+	transition: transform 0.1s ease-in-out;
 }
 
+.cell:hover {
+	background-color: red;
+	border: 1px solid black;
+	cursor: pointer;
+	transform: scale(1.2);
+}
 </style>

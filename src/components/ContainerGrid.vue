@@ -7,6 +7,7 @@
 				:color="color"
 				:isEditable="true"
 				v-on:cellClicked="cellClicked"
+				ref="topLeftGrid"
 			/>
 			<GutterGrid
 				orientation="vertical-top"
@@ -21,7 +22,7 @@
 				:gridSize="gridSize"
 				:isEditable="false"
 				:colorIndex="colorIndex"
-				ref="1"
+				ref="topRightGrid"
 			/>
 
 			<GutterGrid
@@ -44,7 +45,7 @@
 				:gridSize="gridSize"
 				:isEditable="false"
 				:colorIndex="colorIndex"
-				ref="2"
+				ref="bottomLeftGrid"
 			/>
 			<GutterGrid
 				orientation="vertical-bottom"
@@ -57,7 +58,7 @@
 				:gridSize="gridSize"
 				:isEditable="false"
 				:colorIndex="colorIndex"
-				ref="3"
+				ref="bottomRightGrid"
 			/>
 		</div>
 	</div>
@@ -77,15 +78,26 @@ export default {
 	},
 	methods: {
 		cellClicked(index) {
-			this.$refs['1'].applyColor(index, this.color);
-			this.$refs['2'].applyColor(index, this.color);
-			this.$refs['3'].applyColor(index, this.color);
+			this.$refs['topRightGrid'].applyColor(index, this.color);
+			this.$refs['bottomLeftGrid'].applyColor(index, this.color);
+			this.$refs['bottomRightGrid'].applyColor(index, this.color);
 		},
 		leftGutterClicked(index) {
 			this.$refs.rightGutter.applyColor(index, this.color);
 		},
 		topGutterClicked(index) {
 			this.$refs.bottomGutter.applyColor(index, this.color);
+		},
+		toggleGridLines(val) {
+			this.$refs.topLeftGrid.toggleGridLines(val);
+			this.$refs.topRightGrid.toggleGridLines(val);
+			this.$refs.bottomLeftGrid.toggleGridLines(val);
+			this.$refs.bottomRightGrid.toggleGridLines(val);
+
+			this.$refs.topGutter.toggleGridLines(val);
+			this.$refs.leftGutter.toggleGridLines(val);
+			this.$refs.rightGutter.toggleGridLines(val);
+			this.$refs.bottomGutter.toggleGridLines(val);
 		},
 	},
 };
@@ -97,6 +109,7 @@ export default {
 	display: grid;
 	grid-template-rows: 1fr auto 1fr;
 	grid-template-columns: 1fr auto 1fr;
+	border: 1px solid gray;
 	/*
 	grid-template-rows: repeat(2, 1fr);
 	grid-template-columns: repeat(2, 1fr);
