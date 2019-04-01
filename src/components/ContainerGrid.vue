@@ -33,7 +33,7 @@
 				:isEditable="true"
 				v-on:cellClicked="leftGutterClicked"
 			/>
-			<Cell :isEditable="true" :color="color" style="background-color:lightgray"/>
+			<Cell :isEditable="true" :color="color" ref="singleCell"/>
 			<GutterGrid
 				orientation="horizontal-right"
 				:cellCount="gridSize"
@@ -99,6 +99,13 @@ export default {
 			this.$refs.rightGutter.toggleGridLines(val);
 			this.$refs.bottomGutter.toggleGridLines(val);
 		},
+		clearCell() {
+			this.$refs.singleCell.$el.style.backgroundColor = 'lightgray';
+		},
+	},
+	mounted() {
+		this.clearCell();
+		this.$root.$on('clearCells', this.clearCell);
 	},
 };
 </script>

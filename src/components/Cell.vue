@@ -62,8 +62,6 @@ export default {
 		},
 	},
 	mounted() {
-		//console.log(this.$refs['cell'].style);
-		//console.log(this.color);
 		this.$root.$on('clearCells', this.clearCell);
 	},
 };
