@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<h1 class="title">Dulpigrid</h1>
+		<h1 class="title">Dupligrid</h1>
 		<Tools v-on:toggleGridLines="toggleGridLines" :penColor="color" v-on:colorChanged="colorChanged"/>
 		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex" ref="containerGrid"/>
 	</div>
