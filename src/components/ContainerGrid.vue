@@ -110,6 +110,8 @@ export default {
 	grid-template-rows: 1fr auto 1fr;
 	grid-template-columns: 1fr auto 1fr;
 	border: 1px solid gray;
+	background-color: white;
+	box-shadow: 10px 10px 20px hsla(0, 0%, 0%, 0.5);
 	/*
 	grid-template-rows: repeat(2, 1fr);
 	grid-template-columns: repeat(2, 1fr);

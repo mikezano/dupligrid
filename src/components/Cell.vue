@@ -4,6 +4,7 @@
 		class="cell"
 		@mousedown="applyPenColor($event)"
 		@mouseenter="applyPenColor($event)"
+		@mouseup="removePreviewPenColor($event)"
 	></div>
 </template>
 
@@ -11,25 +12,59 @@
 export default {
 	name: 'cell',
 	props: ['color', 'index', 'isEditable'],
+	data() {
+		return {
+			currentColor: '',
+		};
+	},
 	methods: {
 		applyColor(color) {
-			this.$refs['cell'].style.backgroundColor = color;
-			//var before = window.getComputedStyle(this.$refs.cell, ':before');
+			this.$refs.cell.style.backgroundColor = color;
+			this.currentColor = color;
 		},
 		applyPenColor(event) {
-			if (!(event.buttons == 1 || event.buttons == 2)) return;
 			if (!this.isEditable) return;
 
-			this.applyColor(this.color);
-			this.$emit('cellClicked', this.index);
+			//one of the mouse buttons is held while entering cell
+			if (event.buttons == 1 || event.buttons == 2) {
+				this.applyColor(this.color);
+				this.$emit('cellClicked', this.index);
+			} else {
+				this.applyPreviewPenColor();
+			}
+		},
+		applyPreviewPenColor() {
+			this.$refs.cell.style.backgroundColor = this.color;
+			this.$refs.cell.addEventListener(
+				'mouseout',
+				this.removePreviewPenColor,
+			);
+		},
+		removePreviewPenColor() {
+			this.$refs.cell.style.backgroundColor = this.currentColor;
+			this.$refs.cell.removeEventListener(
+				'mouseout',
+				this.removePreviewPenColor,
+			);
 		},
 		toggleGridLines(val) {
 			this.$refs.cell.style.borderColor = val ? 'gray' : 'transparent';
+		},
+		clearCell() {
+			if (!this.$refs.cell || !this.$refs.cell.style) return;
+
+			this.$refs.cell.style.backgroundColor = 'transparent';
+			this.currentColor = '';
+			this.$refs.cell.removeEventListener(
+				'mouseout',
+				this.removePreviewPenColor,
+			);
 		},
 	},
 	mounted() {
 		//console.log(this.$refs['cell'].style);
 		//console.log(this.color);
+		this.$root.$on('clearCells', this.clearCell);
 	},
 };
 </script>
@@ -43,9 +78,8 @@ export default {
 }
 
 .cell:hover {
-	background-color: red;
 	border: 1px solid black;
 	cursor: pointer;
-	transform: scale(1.2);
+	transform: scale(1.4);
 }
 </style>

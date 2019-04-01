@@ -1,13 +1,12 @@
 <template>
 	<div id="app">
-		<PenColor :penColor="color" v-on:colorChanged="colorChanged"/>
-		<Tools v-on:toggleGridLines="toggleGridLines"/>
+		<h1 class="title">Dulpigrid</h1>
+		<Tools v-on:toggleGridLines="toggleGridLines" :penColor="color" v-on:colorChanged="colorChanged"/>
 		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex" ref="containerGrid"/>
 	</div>
 </template>
 
 <script>
-import PenColor from '@/components/PenColor.vue';
 import Tools from '@/components/Tools.vue';
 import ContainerGrid from '@/components/ContainerGrid.vue';
 
@@ -21,7 +20,6 @@ export default {
 		};
 	},
 	components: {
-		PenColor,
 		ContainerGrid,
 		Tools,
 	},
@@ -37,13 +35,28 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Rubik+Mono+One');
 #app {
 	font-family: 'Avenir', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
-	color: #2c3e50;
-	margin-top: 60px;
+	color: white;
+	padding-top: 40px;
+	background: linear-gradient(#444, #666);
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	font-family: 'Rubik Mono One', sans-serif;
+}
+
+.title {
+	margin: 0 0 1rem 0;
+	font-size: 4rem;
+
+	text-shadow: 10px 10px 20px black;
 }
 </style>
 
