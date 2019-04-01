@@ -73,6 +73,7 @@ export default {
 	height: 10px;
 	border: 1px solid gray;
 	transition: transform 0.1s ease-in-out;
+	user-select: none; /* fixes issue where sometimes you're dragging a cell */
 }
 
 .cell:hover {
