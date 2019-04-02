@@ -79,6 +79,6 @@ export default {
 .cell:hover {
 	border: 1px solid black;
 	cursor: pointer;
-	transform: scale(1.4);
+
 }
 </style>

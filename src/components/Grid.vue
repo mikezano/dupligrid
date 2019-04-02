@@ -41,7 +41,7 @@ export default {
 		},
 	},
 	mounted() {
-		console.log(this.gridCellCount);
+
 		let grid = this.$refs['main-grid'];
 		grid.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr`;
 		grid.style.gridTemplateRows = `repeat(${this.gridSize}, 1fr`;

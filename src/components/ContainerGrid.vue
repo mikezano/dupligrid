@@ -8,6 +8,7 @@
 				:isEditable="true"
 				v-on:cellClicked="cellClicked"
 				ref="topLeftGrid"
+				@mousedown.native="startTracking($event)"
 			/>
 			<GutterGrid
 				orientation="vertical-top"
@@ -33,7 +34,7 @@
 				:isEditable="true"
 				v-on:cellClicked="leftGutterClicked"
 			/>
-			<Cell :isEditable="true" :color="color" ref="singleCell"/>
+			<Cell :isEditable="true" :color="color" ref="singleCell" />
 			<GutterGrid
 				orientation="horizontal-right"
 				:cellCount="gridSize"
@@ -102,6 +103,24 @@ export default {
 		clearCell() {
 			this.$refs.singleCell.$el.style.backgroundColor = 'lightgray';
 		},
+		startTracking(){
+			console.log('went down');
+			this.$refs.topLeftGrid.$el.addEventListener('mouseup', this.stopTrackingOnMouseUp);
+			this.$refs.topLeftGrid.$el.addEventListener('mouseout', this.stopTrackingOnMouseOut);
+		},
+		stopTrackingOnMouseUp(event){
+			console.log('went up, nextEl:', event.toElement);
+			this.removeTrackingEventListeners();
+		},
+		stopTrackingOnMouseOut(event){
+			if(event.toElement.className == 'cell') return;
+			console.log('all the way out');
+			this.removeTrackingEventListeners();
+		},
+		removeTrackingEventListeners(){
+			this.$refs.topLeftGrid.$el.removeEventListener('mouseup', this.stopTrackingOnMouseUp);
+			this.$refs.topLeftGrid.$el.removeEventListener('mouseout', this.stopTrackingOnMouseOut);
+		}
 	},
 	mounted() {
 		this.clearCell();
