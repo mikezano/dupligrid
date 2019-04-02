@@ -17,6 +17,7 @@
 				ref="topGutter"
 				:isEditable="true"
 				v-on:cellClicked="topGutterClicked"
+				@mousedown.native="startTracking($event)"
 			/>
 			<Grid
 				orientation="flipped-horizontal"
@@ -33,8 +34,14 @@
 				ref="leftGutter"
 				:isEditable="true"
 				v-on:cellClicked="leftGutterClicked"
+				@mousedown.native="startTracking($event)"
 			/>
-			<Cell :isEditable="true" :color="color" ref="singleCell" />
+			<Cell
+				:isEditable="true"
+				:color="color"
+				ref="singleCell"
+				@mousedown.native="startTracking($event)"
+			/>
 			<GutterGrid
 				orientation="horizontal-right"
 				:cellCount="gridSize"
@@ -72,16 +79,26 @@ import Cell from '@/components/Cell.vue';
 
 export default {
 	props: ['gridSize', 'color', 'colorIndex'],
+	data() {
+		return {
+			editableRegions: [],
+			lastEdits: [],
+			allEdits: [],
+			isTracking: false,
+		};
+	},
 	components: {
 		Grid,
 		GutterGrid,
 		Cell,
 	},
 	methods: {
-		cellClicked(index) {
-			this.$refs['topRightGrid'].applyColor(index, this.color);
-			this.$refs['bottomLeftGrid'].applyColor(index, this.color);
-			this.$refs['bottomRightGrid'].applyColor(index, this.color);
+		cellClicked(index, color) {
+			this.lastEdits.push({ index, color });
+
+			this.$refs.topRightGrid.applyColor(index, this.color);
+			this.$refs.bottomLeftGrid.applyColor(index, this.color);
+			this.$refs.bottomRightGrid.applyColor(index, this.color);
 		},
 		leftGutterClicked(index) {
 			this.$refs.rightGutter.applyColor(index, this.color);
@@ -103,28 +120,53 @@ export default {
 		clearCell() {
 			this.$refs.singleCell.$el.style.backgroundColor = 'lightgray';
 		},
-		startTracking(){
+		startTracking() {
 			console.log('went down');
-			this.$refs.topLeftGrid.$el.addEventListener('mouseup', this.stopTrackingOnMouseUp);
-			this.$refs.topLeftGrid.$el.addEventListener('mouseout', this.stopTrackingOnMouseOut);
+
+			this.editableRegions.forEach(region => {
+				region.$el.addEventListener(
+					'mouseup',
+					this.stopTrackingOnMouseUp,
+				);
+				region.$el.addEventListener(
+					'mouseout',
+					this.stopTrackingOnMouseOut,
+				);
+			});
 		},
-		stopTrackingOnMouseUp(event){
+		stopTrackingOnMouseUp(event) {
 			console.log('went up, nextEl:', event.toElement);
 			this.removeTrackingEventListeners();
 		},
-		stopTrackingOnMouseOut(event){
-			if(event.toElement.className == 'cell') return;
+		stopTrackingOnMouseOut(event) {
+			if (event.toElement.classList.contains('editable')) return;
 			console.log('all the way out');
 			this.removeTrackingEventListeners();
 		},
-		removeTrackingEventListeners(){
-			this.$refs.topLeftGrid.$el.removeEventListener('mouseup', this.stopTrackingOnMouseUp);
-			this.$refs.topLeftGrid.$el.removeEventListener('mouseout', this.stopTrackingOnMouseOut);
-		}
+		removeTrackingEventListeners() {
+			this.allEdits.push(this.lastEdits);
+			this.lastEdits = [];
+
+			this.editableRegions.forEach(region => {
+				region.$el.removeEventListener(
+					'mouseup',
+					this.stopTrackingOnMouseUp,
+				);
+				region.$el.removeEventListener(
+					'mouseout',
+					this.stopTrackingOnMouseOut,
+				);
+			});
+		},
 	},
 	mounted() {
 		this.clearCell();
 		this.$root.$on('clearCells', this.clearCell);
+
+		this.editableRegions.push(this.$refs.topLeftGrid);
+		this.editableRegions.push(this.$refs.topGutter);
+		this.editableRegions.push(this.$refs.leftGutter);
+		this.editableRegions.push(this.$refs.singleCell);
 	},
 };
 </script>

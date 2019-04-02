@@ -28,8 +28,8 @@ export default {
 		};
 	},
 	methods: {
-		cellClicked(index) {
-			this.$emit('cellClicked', index);
+		cellClicked(index, color) {
+			this.$emit('cellClicked', index, color);
 		},
 		applyColor(index, color) {
 			this.$refs['i'][index - 1].applyColor(color);
@@ -41,7 +41,6 @@ export default {
 		},
 	},
 	mounted() {
-
 		let grid = this.$refs['main-grid'];
 		grid.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr`;
 		grid.style.gridTemplateRows = `repeat(${this.gridSize}, 1fr`;

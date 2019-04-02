@@ -2,6 +2,7 @@
 	<div
 		ref="cell"
 		class="cell"
+		:class="{editable: isEditable}"
 		@mousedown="applyPenColor($event)"
 		@mouseenter="applyPenColor($event)"
 		@mouseup="removePreviewPenColor($event)"
@@ -27,8 +28,8 @@ export default {
 
 			//one of the mouse buttons is held while entering cell
 			if (event.buttons == 1 || event.buttons == 2) {
+				this.$emit('cellClicked', this.index, this.currentColor);
 				this.applyColor(this.color);
-				this.$emit('cellClicked', this.index);
 			} else {
 				this.applyPreviewPenColor();
 			}
@@ -79,6 +80,5 @@ export default {
 .cell:hover {
 	border: 1px solid black;
 	cursor: pointer;
-
 }
 </style>
