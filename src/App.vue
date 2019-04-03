@@ -1,6 +1,7 @@
 <template>
-	<div id="app">
-		<h1 class="title">Dupligrid</h1>
+	<div id="app" >
+		<h1 class="title" @keyup.ctrl.90="show">Dupligrid</h1>
+		<input @keyup.ctrl.90="show" />
 		<Tools v-on:toggleGridLines="toggleGridLines" :penColor="color" v-on:colorChanged="colorChanged"/>
 		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex" ref="containerGrid"/>
 	</div>
@@ -30,7 +31,23 @@ export default {
 		toggleGridLines(val) {
 			this.$refs.containerGrid.toggleGridLines(val);
 		},
+		show(){
+			alert('j');
+		},
+		undo(event){
+
+			let ctrlPressed = event.ctrlKey;
+			let zPressed = event.key;
+
+			if(!(ctrlPressed && zPressed)) return;
+
+			this.$refs.containerGrid.undo();
+
+		},
 	},
+	mounted(){
+		document.addEventListener('keyup', this.undo);
+	}
 };
 </script>
 

@@ -18,7 +18,7 @@
 import Cell from '@/components/Cell.vue';
 
 export default {
-	props: ['color', 'gridSize', 'orientation', 'isEditable'],
+	props: ['color', 'gridSize', 'orientation', 'isEditable', 'name'],
 	components: {
 		Cell,
 	},
@@ -29,7 +29,7 @@ export default {
 	},
 	methods: {
 		cellClicked(index, color) {
-			this.$emit('cellClicked', index, color);
+			this.$emit('cellClicked', index, color, this.name);
 		},
 		applyColor(index, color) {
 			this.$refs['i'][index - 1].applyColor(color);

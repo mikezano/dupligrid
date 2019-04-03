@@ -7,6 +7,7 @@
 				:color="color"
 				:isEditable="true"
 				v-on:cellClicked="cellClicked"
+				name="topLeftGrid"
 				ref="topLeftGrid"
 				@mousedown.native="startTracking($event)"
 			/>
@@ -14,6 +15,7 @@
 				orientation="vertical-top"
 				:cellCount="gridSize"
 				:color="color"
+				name="topGutter"
 				ref="topGutter"
 				:isEditable="true"
 				v-on:cellClicked="topGutterClicked"
@@ -31,6 +33,7 @@
 				:color="color"
 				orientation="horizontal-left"
 				:cellCount="gridSize"
+				name="leftGutter"
 				ref="leftGutter"
 				:isEditable="true"
 				v-on:cellClicked="leftGutterClicked"
@@ -39,6 +42,7 @@
 			<Cell
 				:isEditable="true"
 				:color="color"
+				name="singleCell"
 				ref="singleCell"
 				@mousedown.native="startTracking($event)"
 			/>
@@ -93,8 +97,8 @@ export default {
 		Cell,
 	},
 	methods: {
-		cellClicked(index, color) {
-			this.lastEdits.push({ index, color });
+		cellClicked(index, color, name) {
+			this.lastEdits.push({ index, color, name });
 
 			this.$refs.topRightGrid.applyColor(index, this.color);
 			this.$refs.bottomLeftGrid.applyColor(index, this.color);
@@ -119,9 +123,9 @@ export default {
 		},
 		clearCell() {
 			this.$refs.singleCell.$el.style.backgroundColor = 'lightgray';
+			this.allEdits = [];
 		},
 		startTracking() {
-			console.log('went down');
 
 			this.editableRegions.forEach(region => {
 				region.$el.addEventListener(
@@ -135,16 +139,15 @@ export default {
 			});
 		},
 		stopTrackingOnMouseUp(event) {
-			console.log('went up, nextEl:', event.toElement);
 			this.removeTrackingEventListeners();
 		},
 		stopTrackingOnMouseOut(event) {
 			if (event.toElement.classList.contains('editable')) return;
-			console.log('all the way out');
 			this.removeTrackingEventListeners();
 		},
 		removeTrackingEventListeners() {
 			this.allEdits.push(this.lastEdits);
+			console.log(this.allEdits);
 			this.lastEdits = [];
 
 			this.editableRegions.forEach(region => {
@@ -158,6 +161,13 @@ export default {
 				);
 			});
 		},
+		undo(){
+			let edits = this.allEdits.pop();
+
+			edits.forEach(edit =>{
+				this.$refs[edit.name].applyColor(edit.index, edit.color);
+			});
+		}
 	},
 	mounted() {
 		this.clearCell();
