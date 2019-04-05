@@ -28,8 +28,8 @@ export default {
 		};
 	},
 	methods: {
-		cellClicked(index, color) {
-			this.$emit('cellClicked', index, color, this.name);
+		cellClicked(index, previousColor) {
+			this.$emit('cellClicked', index, previousColor, this.name);
 		},
 		applyColor(index, color) {
 			this.$refs['i'][index - 1].applyColor(color);

@@ -28,7 +28,9 @@ export default {
 
 			//one of the mouse buttons is held while entering cell
 			if (event.buttons == 1 || event.buttons == 2) {
+				//TODO, break into two calls....one for index, one for color
 				this.$emit('cellClicked', this.index, this.currentColor);
+
 				this.applyColor(this.color);
 			} else {
 				this.applyPreviewPenColor();

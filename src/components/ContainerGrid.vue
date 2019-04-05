@@ -97,17 +97,21 @@ export default {
 		Cell,
 	},
 	methods: {
-		cellClicked(index, color, name) {
-			this.lastEdits.push({ index, color, name });
+		cellClicked(index, previousColor, name) {
+			//color here , is the cells previous color before clicking
+			//should be its own method? looks weird to have 'color' here
+			this.lastEdits.push({ index, color: previousColor, name });
 
 			this.$refs.topRightGrid.applyColor(index, this.color);
 			this.$refs.bottomLeftGrid.applyColor(index, this.color);
 			this.$refs.bottomRightGrid.applyColor(index, this.color);
 		},
-		leftGutterClicked(index) {
+		leftGutterClicked(index, previousColor, name) {
+			this.lastEdits.push({ index, color: previousColor, name });
 			this.$refs.rightGutter.applyColor(index, this.color);
 		},
-		topGutterClicked(index) {
+		topGutterClicked(index, previousColor, name) {
+			this.lastEdits.push({ index, color: previousColor, name });
 			this.$refs.bottomGutter.applyColor(index, this.color);
 		},
 		toggleGridLines(val) {
@@ -126,7 +130,6 @@ export default {
 			this.allEdits = [];
 		},
 		startTracking() {
-
 			this.editableRegions.forEach(region => {
 				region.$el.addEventListener(
 					'mouseup',
@@ -161,13 +164,38 @@ export default {
 				);
 			});
 		},
-		undo(){
+		updateRegion(edit) {
+			this.$refs[edit.name].applyColor(edit.index, edit.color);
+
+			switch (edit.name) {
+				case 'topLeftGrid':
+					this.$refs.topRightGrid.applyColor(edit.index, edit.color);
+					this.$refs.bottomLeftGrid.applyColor(
+						edit.index,
+						edit.color,
+					);
+					this.$refs.bottomRightGrid.applyColor(
+						edit.index,
+						edit.color,
+					);
+					break;
+				case 'topGutter':
+					this.$refs.bottomGutter.applyColor(edit.index, edit.color);
+					break;
+				case 'leftGutter':
+					this.$refs.rightGutter.applyColor(edit.index, edit.color);
+					break;
+			}
+		},
+		undo() {
+			if (this.allEdits.length < 1) return;
+
 			let edits = this.allEdits.pop();
 
-			edits.forEach(edit =>{
-				this.$refs[edit.name].applyColor(edit.index, edit.color);
+			edits.forEach(edit => {
+				this.updateRegion(edit);
 			});
-		}
+		},
 	},
 	mounted() {
 		this.clearCell();

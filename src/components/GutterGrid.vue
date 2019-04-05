@@ -17,7 +17,7 @@ import Cell from '@/components/Cell.vue';
 
 export default {
 	name: 'GutterGrid',
-	props: ['cellCount', 'orientation', 'isEditable', 'color'],
+	props: ['cellCount', 'orientation', 'isEditable', 'color', 'name'],
 	components: {
 		Cell,
 	},
@@ -25,8 +25,8 @@ export default {
 		applyColor(index, color) {
 			this.$refs['i'][index - 1].applyColor(color);
 		},
-		cellClicked(index) {
-			this.$emit('cellClicked', index);
+		cellClicked(index, previousColor) {
+			this.$emit('cellClicked', index, previousColor, this.name);
 		},
 		toggleGridLines(val) {
 			this.$refs.i.forEach(element => {
