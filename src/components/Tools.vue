@@ -2,7 +2,7 @@
 	<div class="tools">
 		<div class="tools__item">
 			<label class="tools__label">Pen Color :</label>
-			<PenColor :penColor="color" v-on:colorChanged="colorChanged" class="tools__input"/>
+			<PenColor :penColor="color" v-on:colorChanged="colorChanged" class="tools__input" />
 		</div>
 		<div class="tools__item">
 			<label class="tools__label">Grid on/off :</label>
@@ -14,34 +14,37 @@
 	</div>
 </template>
 
-<script>
+<script setup lang="ts">
 import PenColor from '@/components/PenColor.vue';
-export default {
-	name: 'Tools',
-	props: ['penColor'],
-	data() {
-		return {
-			isShowingGridLines: true,
-			color: this.penColor,
-		};
-	},
-	components: {
-		PenColor,
-	},
-	watch: {
-		isShowingGridLines(val) {
-			this.$emit('toggleGridLines', val);
-		},
-	},
-	methods: {
-		clear() {
-			this.$root.$emit('clearCells');
-		},
-		colorChanged(val) {
-			this.$emit('colorChanged', val);
-		},
-	},
-};
+import { ref, watch } from 'vue';
+
+interface Props {
+	penColor?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	penColor: '#000000',
+});
+const emit = defineEmits<{
+	toggleGridLines: [val: boolean];
+	colorChanged: [val: string];
+	clear: [];
+}>();
+
+const isShowingGridLines = ref(true);
+const color = ref(props.penColor);
+
+watch(isShowingGridLines, (val: boolean) => {
+	emit('toggleGridLines', val);
+});
+
+function clear(): void {
+	emit('clear');
+}
+
+function colorChanged(val: string): void {
+	emit('colorChanged', val);
+}
 </script>
 
 <style>
@@ -52,15 +55,18 @@ export default {
 	align-items: center;
 	margin-bottom: 1rem;
 }
+
 .tools__item {
 	display: flex;
 	padding: 0.2rem;
 	width: 14rem;
 }
+
 .tools__label {
 	width: 12rem;
 	text-align: left;
 }
+
 .tools__input {
 	margin-left: auto;
 }
@@ -88,4 +94,3 @@ export default {
 	box-shadow: 4px 4px 10px hsla(0, 0%, 0%, 0.5);
 }
 </style>
-

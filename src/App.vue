@@ -1,58 +1,53 @@
 <template>
-	<div id="app" >
-		<h1 class="title" @keyup.ctrl.90="show">Dupligrid</h1>
-		<input @keyup.ctrl.90="show" />
-		<Tools v-on:toggleGridLines="toggleGridLines" :penColor="color" v-on:colorChanged="colorChanged"/>
-		<ContainerGrid :gridSize="gridSize" :color="color" :colorIndex="colorIndex" ref="containerGrid"/>
+	<div id="app">
+		<h1 class="title" @keyup.ctrl.z="show">Dupligrid</h1>
+		<input @keyup.ctrl.z="show" />
+		<Tools v-on:toggleGridLines="toggleGridLines" :penColor="color" v-on:colorChanged="colorChanged"
+			@clear="clearCells" />
+		<ContainerGrid :gridSize="gridSize" :color="color" ref="containerGrid" />
 	</div>
 </template>
 
-<script>
-import Tools from '@/components/Tools.vue';
+<script setup lang="ts">
 import ContainerGrid from '@/components/ContainerGrid.vue';
+import Tools from '@/components/Tools.vue';
+import { onMounted, ref } from 'vue';
 
-export default {
-	name: 'app',
-	data() {
-		return {
-			color: '#000000',
-			colorIndex: 0,
-			gridSize: 20,
-		};
-	},
-	components: {
-		ContainerGrid,
-		Tools,
-	},
-	methods: {
-		colorChanged(val) {
-			this.color = val;
-		},
-		toggleGridLines(val) {
-			this.$refs.containerGrid.toggleGridLines(val);
-		},
-		show(){
-			alert('j');
-		},
-		undo(event){
+type ContainerGridInstance = InstanceType<typeof ContainerGrid>;
 
-			let ctrlPressed = event.ctrlKey;
-			let zPressed = event.key;
+const color = ref('#000000');
+const gridSize = ref(20);
+const containerGrid = ref<ContainerGridInstance | null>(null);
 
-			if(!(ctrlPressed && zPressed)) return;
+function colorChanged(val: string): void {
+	color.value = val;
+}
 
-			this.$refs.containerGrid.undo();
+function clearCells(): void {
+	containerGrid.value?.clear();
+}
 
-		},
-	},
-	mounted(){
-		document.addEventListener('keyup', this.undo);
-	}
-};
+function toggleGridLines(val: boolean): void {
+	containerGrid.value?.toggleGridLines(val);
+}
+
+function show(): void {
+	alert('j');
+}
+
+function undo(event: KeyboardEvent): void {
+	if (!(event.ctrlKey && event.key === 'z')) return;
+	containerGrid.value?.undo();
+}
+
+onMounted(() => {
+	document.addEventListener('keyup', undo);
+});
 </script>
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Rubik+Mono+One');
+
 #app {
 	font-family: 'Avenir', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
@@ -76,4 +71,3 @@ export default {
 	text-shadow: 10px 10px 20px black;
 }
 </style>
-

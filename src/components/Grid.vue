@@ -1,51 +1,68 @@
 <template>
 	<div class="main-grid-flex" :class="orientation">
-		<div class="main-grid" ref="main-grid">
-			<Cell
-				:color="color"
-				:index="i"
-				:isEditable="isEditable"
-				v-on:cellClicked="cellClicked"
-				ref="i"
-				v-for="i in gridCellCount"
-				:key="i"
-			/>
+		<div class="main-grid" ref="mainGrid">
+			<Cell :color="color" :index="i" :isEditable="isEditable" v-on:cellClicked="cellClicked"
+				:ref="el => { if (el) cellRefs[i - 1] = el as CellInstance }" v-for="i in gridCellCount" :key="i" />
 		</div>
 	</div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Cell from '@/components/Cell.vue';
+import { onBeforeUpdate, onMounted, ref } from 'vue';
 
-export default {
-	props: ['color', 'gridSize', 'orientation', 'isEditable', 'name'],
-	components: {
-		Cell,
-	},
-	data() {
-		return {
-			gridCellCount: this.gridSize * this.gridSize,
-		};
-	},
-	methods: {
-		cellClicked(index, previousColor) {
-			this.$emit('cellClicked', index, previousColor, this.name);
-		},
-		applyColor(index, color) {
-			this.$refs['i'][index - 1].applyColor(color);
-		},
-		toggleGridLines(val) {
-			this.$refs.i.forEach(element => {
-				element.toggleGridLines(val);
-			});
-		},
-	},
-	mounted() {
-		let grid = this.$refs['main-grid'];
-		grid.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr`;
-		grid.style.gridTemplateRows = `repeat(${this.gridSize}, 1fr`;
-	},
-};
+interface Props {
+	gridSize: number;
+	color?: string;
+	orientation?: string;
+	isEditable?: boolean;
+	name?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	color: '',
+	orientation: 'normal',
+	isEditable: false,
+	name: '',
+});
+const emit = defineEmits<{
+	cellClicked: [index: number, previousColor: string, name: string];
+}>();
+
+type CellInstance = InstanceType<typeof Cell>;
+
+const gridCellCount = props.gridSize * props.gridSize;
+const cellRefs = ref<CellInstance[]>([]);
+const mainGrid = ref<HTMLDivElement | null>(null);
+
+onBeforeUpdate(() => {
+	cellRefs.value = [];
+});
+
+function cellClicked(index: number, previousColor: string): void {
+	emit('cellClicked', index, previousColor, props.name);
+}
+
+function applyColor(index: number, color: string): void {
+	cellRefs.value[index - 1].applyColor(color);
+}
+
+function clearCells(): void {
+	cellRefs.value.forEach(cell => cell.clearCell());
+}
+
+function toggleGridLines(val: boolean): void {
+	cellRefs.value.forEach(element => {
+		element.toggleGridLines(val);
+	});
+}
+
+onMounted(() => {
+	mainGrid.value!.style.gridTemplateColumns = `repeat(${props.gridSize}, 1fr)`;
+	mainGrid.value!.style.gridTemplateRows = `repeat(${props.gridSize}, 1fr)`;
+});
+
+defineExpose({ applyColor, clearCells, toggleGridLines });
 </script>
 
 <style>
@@ -62,6 +79,7 @@ export default {
 .normal {
 	background-color: lightgray;
 }
+
 .flipped-horizontal {
 	transform: scaleX(-1);
 }

@@ -1,40 +1,59 @@
 <template>
 	<div class="gutter-cells" :class="orientation">
-		<Cell
-			v-for="i in cellCount"
-			ref="i"
-			:key="i"
-			v-on:cellClicked="cellClicked"
-			:color="color"
-			:index="i"
-			:isEditable="isEditable"
-		/>
+		<Cell v-for="i in cellCount" :ref="el => { if (el) cellRefs[i - 1] = el as CellInstance }" :key="i"
+			v-on:cellClicked="cellClicked" :color="color" :index="i" :isEditable="isEditable" />
 	</div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Cell from '@/components/Cell.vue';
+import { onBeforeUpdate, ref } from 'vue';
 
-export default {
-	name: 'GutterGrid',
-	props: ['cellCount', 'orientation', 'isEditable', 'color', 'name'],
-	components: {
-		Cell,
-	},
-	methods: {
-		applyColor(index, color) {
-			this.$refs['i'][index - 1].applyColor(color);
-		},
-		cellClicked(index, previousColor) {
-			this.$emit('cellClicked', index, previousColor, this.name);
-		},
-		toggleGridLines(val) {
-			this.$refs.i.forEach(element => {
-				element.toggleGridLines(val);
-			});
-		},
-	},
-};
+interface Props {
+	cellCount: number;
+	orientation?: string;
+	isEditable?: boolean;
+	color?: string;
+	name?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	orientation: 'vertical-top',
+	isEditable: false,
+	color: '',
+	name: '',
+});
+const emit = defineEmits<{
+	cellClicked: [index: number, previousColor: string, name: string];
+}>();
+
+type CellInstance = InstanceType<typeof Cell>;
+
+const cellRefs = ref<CellInstance[]>([]);
+
+onBeforeUpdate(() => {
+	cellRefs.value = [];
+});
+
+function applyColor(index: number, color: string): void {
+	cellRefs.value[index - 1].applyColor(color);
+}
+
+function clearCells(): void {
+	cellRefs.value.forEach(cell => cell.clearCell());
+}
+
+function cellClicked(index: number, previousColor: string): void {
+	emit('cellClicked', index, previousColor, props.name);
+}
+
+function toggleGridLines(val: boolean): void {
+	cellRefs.value.forEach(element => {
+		element.toggleGridLines(val);
+	});
+}
+
+defineExpose({ applyColor, clearCells, toggleGridLines });
 </script>
 
 <style>
@@ -56,6 +75,7 @@ export default {
 .gutter-cells.vertical-top {
 	background-color: lightgray;
 }
+
 .gutter-cells.horizontal-right {
 	transform: scaleX(-1);
 }

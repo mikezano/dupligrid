@@ -1,73 +1,68 @@
 <template>
-	<div
-		ref="cell"
-		class="cell"
-		:class="{editable: isEditable}"
-		@mousedown="applyPenColor($event)"
-		@mouseenter="applyPenColor($event)"
-		@mouseup="removePreviewPenColor($event)"
-	></div>
+	<div ref="cell" class="cell" :class="{ editable: isEditable }" @mousedown="applyPenColor($event)"
+		@mouseenter="applyPenColor($event)" @mouseup="removePreviewPenColor"></div>
 </template>
 
-<script>
-export default {
-	name: 'cell',
-	props: ['color', 'index', 'isEditable'],
-	data() {
-		return {
-			currentColor: '',
-		};
-	},
-	methods: {
-		applyColor(color) {
-			this.$refs.cell.style.backgroundColor = color;
-			this.currentColor = color;
-		},
-		applyPenColor(event) {
-			if (!this.isEditable) return;
+<script setup lang="ts">
+import { ref } from 'vue';
 
-			//one of the mouse buttons is held while entering cell
-			if (event.buttons == 1 || event.buttons == 2) {
-				//TODO, break into two calls....one for index, one for color
-				this.$emit('cellClicked', this.index, this.currentColor);
+interface Props {
+	color?: string;
+	index?: number;
+	isEditable?: boolean;
+}
 
-				this.applyColor(this.color);
-			} else {
-				this.applyPreviewPenColor();
-			}
-		},
-		applyPreviewPenColor() {
-			this.$refs.cell.style.backgroundColor = this.color;
-			this.$refs.cell.addEventListener(
-				'mouseout',
-				this.removePreviewPenColor,
-			);
-		},
-		removePreviewPenColor() {
-			this.$refs.cell.style.backgroundColor = this.currentColor;
-			this.$refs.cell.removeEventListener(
-				'mouseout',
-				this.removePreviewPenColor,
-			);
-		},
-		toggleGridLines(val) {
-			this.$refs.cell.style.borderColor = val ? 'gray' : 'transparent';
-		},
-		clearCell() {
-			if (!this.$refs.cell || !this.$refs.cell.style) return;
+const props = withDefaults(defineProps<Props>(), {
+	color: '',
+	index: 0,
+	isEditable: false,
+});
+const emit = defineEmits<{
+	cellClicked: [index: number, previousColor: string];
+}>();
 
-			this.$refs.cell.style.backgroundColor = 'transparent';
-			this.currentColor = '';
-			this.$refs.cell.removeEventListener(
-				'mouseout',
-				this.removePreviewPenColor,
-			);
-		},
-	},
-	mounted() {
-		this.$root.$on('clearCells', this.clearCell);
-	},
-};
+const cell = ref<HTMLDivElement | null>(null);
+const currentColor = ref('');
+
+function applyColor(color: string): void {
+	cell.value!.style.backgroundColor = color;
+	currentColor.value = color;
+}
+
+function applyPenColor(event: MouseEvent): void {
+	if (!props.isEditable) return;
+
+	if (event.buttons == 1 || event.buttons == 2) {
+		emit('cellClicked', props.index, currentColor.value);
+		applyColor(props.color);
+	} else {
+		applyPreviewPenColor();
+	}
+}
+
+function applyPreviewPenColor(): void {
+	cell.value!.style.backgroundColor = props.color;
+	cell.value!.addEventListener('mouseout', removePreviewPenColor);
+}
+
+function removePreviewPenColor(): void {
+	cell.value!.style.backgroundColor = currentColor.value;
+	cell.value!.removeEventListener('mouseout', removePreviewPenColor);
+}
+
+function toggleGridLines(val: boolean): void {
+	cell.value!.style.borderColor = val ? 'gray' : 'transparent';
+}
+
+function clearCell(): void {
+	if (!cell.value) return;
+
+	cell.value.style.backgroundColor = 'transparent';
+	currentColor.value = '';
+	cell.value.removeEventListener('mouseout', removePreviewPenColor);
+}
+
+defineExpose({ applyColor, toggleGridLines, clearCell });
 </script>
 
 <style>
@@ -76,7 +71,8 @@ export default {
 	height: 10px;
 	border: 1px solid gray;
 	transition: transform 0.1s ease-in-out;
-	user-select: none; /* fixes issue where sometimes you're dragging a cell */
+	user-select: none;
+	/* fixes issue where sometimes you're dragging a cell */
 }
 
 .cell:hover {
