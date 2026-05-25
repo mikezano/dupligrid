@@ -1,7 +1,6 @@
 <template>
 	<div id="app">
 		<h1 class="title" @keyup.ctrl.z="show">Dupligrid</h1>
-		<input @keyup.ctrl.z="show" />
 		<Tools v-on:toggleGridLines="toggleGridLines" :penColor="color" v-on:colorChanged="colorChanged"
 			@clear="clearCells" />
 		<ContainerGrid :gridSize="gridSize" :color="color" ref="containerGrid" />
